@@ -1,23 +1,24 @@
 <div class="container">
     @if ($errors->any())
-    <div class="pt-3">
-        <div class="alert alert-danger">
-            <ul>
-                @foreach ($errors->all as $item)
-                    <li>{{$item}}</li>
-                @endforeach
-            </ul>
+        <div class="pt-3">
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all as $item)
+                        <li>{{ $item }}</li>
+                    @endforeach
+                </ul>
+            </div>
         </div>
-    </div>
     @endif
 
     @if (session()->has('message'))
         <div class="pt-3">
-            <div class="alert alert-sucsess">
-                {{ session('messsage') }}
+            <div class="alert alert-success">
+                {{ session('message') }}
             </div>
         </div>
     @endif
+
     <!-- START FORM -->
     <div class="my-3 p-3 bg-body rounded shadow-sm">
         <form>
@@ -41,7 +42,13 @@
             </div>
             <div class="mb-3 row">
                 <div class="col-sm-10 offset-sm-2">
-                    <button type="submit" class="btn btn-primary" name="submit" wire:click="store">SIMPAN</button>
+                    @if ($updateData == false)
+                        <button type="submit" class="btn btn-primary" name="submit" wire:click="store">SIMPAN</button>
+                    @else
+                        <button type="submit" class="btn btn-primary" name="submit"
+                            wire:click="update">UPDATE</button>
+                    @endif
+                    <button type="submit" class="btn btn-secondary" name="submit" wire:click="clear">CLEAR</button>
                 </div>
             </div>
         </form>
@@ -50,30 +57,60 @@
 
     <!-- START DATA -->
     <div class="my-3 p-3 bg-body rounded shadow-sm">
-    <h1>Data Pegawai</h1>
+        <h1>Data Pegawai</h1>
+        <div class="pb-3 pt-3">
+            <input type="text" class="form-control mb-3 w-25" placeholder="search" wire:model.live="katakunci">
+        </div>
+        {{ $dataEmployees->links() }}
         <table class="table table-striped">
             <thead>
-            <tr>
-                <th class="col-md-1">No</th>
-                <th class="col-md-1">Nama</th>
-                <th class="col-md-1">Email</th>
-                <th class="col-md-1">Alamat</th>
-                <th class="col-md-1">Aksi</th>
-            </tr>
+                <tr>
+                    <th class="col-md-1">No</th>
+                    <th class="col-md-1">Nama</th>
+                    <th class="col-md-1">Email</th>
+                    <th class="col-md-1">Alamat</th>
+                    <th class="col-md-1">Aksi</th>
+                </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>Messi</td>
-                    <td>messi@gmail.com</td>
-                    <td>Buenos Aires</td>
-                    <td>
-                        <a href="#" class="btn btn-warning btn-sm">Edit</a>
-                        <a href="#" class="btn btn-danger btn-sm">Delete</a>
-                    </td>
-                </tr>
+                @foreach ($dataEmployees as $key => $value)
+                    <tr>
+                        <td>{{ $dataEmployees->firstItem() + $key }}</td>
+                        <td>{{ $value->nama }}</td>
+                        <td>{{ $value->email }}</td>
+                        <td>{{ $value->alamat }}</td>
+                        <td>
+                            <a wire:click="edit({{ $value->id }})" class="btn btn-warning btn-sm">Edit</a>
+                            <a wire:click="delete_confirmation({{ $value->id }})" class="btn btn-danger btn-sm" 
+                                data-bs-toggle="modal" data-bs-target="#exampleModal" >Delete</a>
+                        </td>
+                    </tr>
+                @endforeach
+
             </tbody>
         </table>
+        {{ $dataEmployees->links() }}
     </div>
     <!-- END DATA -->
+
+    
+<!-- Modal -->
+<div wire:ignore.self class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Confrim delete?</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          yakin menghapus?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Gajadi</button>
+          <button type="button" class="btn btn-primary" wire:click="delete()"
+          data-bs-dismiss="modal">Hapus data</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
