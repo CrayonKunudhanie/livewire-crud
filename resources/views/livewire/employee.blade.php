@@ -59,22 +59,30 @@
     <div class="my-3 p-3 bg-body rounded shadow-sm">
         <h1>Data Pegawai</h1>
         <div class="pb-3 pt-3">
-            <input type="text" class="form-control mb-3 w-25" placeholder="search" wire:model.live="katakunci">
+            <input type="text" class="form-control mb-3 w-25" placeholder="search" wire:model="katakunci">
         </div>
+
+        @if ($employee_selected_id)
+        <a wire:click="delete_confirmation('')" class="btn btn-danger btn-sm" 
+            data-bs-toggle="modal" data-bs-target="#exampleModal" >Delete {{ count($employee_selected_id)}} data</a>
+        @endif
+
         {{ $dataEmployees->links() }}
-        <table class="table table-striped">
+        <table class="table table-striped table-sortable">
             <thead>
                 <tr>
+                    <th class="col-md-1"></th>
                     <th class="col-md-1">No</th>
-                    <th class="col-md-1">Nama</th>
-                    <th class="col-md-1">Email</th>
-                    <th class="col-md-1">Alamat</th>
+                    <th class="col-md-1 sort @if ($sortColumn=='nama') {{ $sortDirection }} @endif" wire:click="sort('nama')">Nama</th>
+                    <th class="col-md-1 sort @if ($sortColumn=='email') {{ $sortDirection }} @endif" wire:click="sort('email')">Email</th>
+                    <th class="col-md-1 sort @if ($sortColumn=='alamat') {{ $sortDirection }} @endif" wire:click="sort('alamat')">Alamat</th>
                     <th class="col-md-1">Aksi</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($dataEmployees as $key => $value)
                     <tr>
+                        <td><input type="checkbox" wire:key="{{$value->id}}" value="{{ $value->id }}" wire:model.live="employee_selected_id"></td>
                         <td>{{ $dataEmployees->firstItem() + $key }}</td>
                         <td>{{ $value->nama }}</td>
                         <td>{{ $value->email }}</td>
